@@ -92,3 +92,81 @@ test('with overwriteDefault', async () => {
   expect(en).toMatchSnapshot()
   expect(ja).toMatchSnapshot()
 })
+
+test('with defaultAsFallback', async () => {
+  const tmp = tempy.directory()
+  fs.writeFileSync(
+    path.resolve(tmp, 'en.json'),
+    JSON.stringify(
+      {
+        'a.custom.hello': 'hello',
+        'a.custom.world': 'world',
+        'b.custom.message': 'Default Message'
+      },
+      null,
+      2
+    ),
+    'utf8'
+  )
+  await m(['en', 'ja'], 'src/test/fixtures/custom/**/*.js', tmp, {
+    defaultLocale: 'en',
+    moduleSourceName: '../i18n',
+    overwriteDefault: false,
+    defaultAsFallback: true
+  })
+  const en = JSON.parse(fs.readFileSync(path.resolve(tmp, 'en.json'), 'utf8'))
+  const ja = JSON.parse(fs.readFileSync(path.resolve(tmp, 'ja.json'), 'utf8'))
+
+  const extractedEn = {
+    'a.custom.hello': 'hello',
+    'a.custom.world': 'world',
+    'b.custom.message': 'Default Message'
+  }
+  const extractedJa = {
+    'a.custom.hello': 'hello',
+    'a.custom.world': 'world',
+    'b.custom.message': 'Default Message'
+  }
+
+  expect(en).toEqual(extractedEn)
+  expect(ja).toEqual(extractedJa)
+})
+
+test('with defaultAsFallback and overwriteDefault', async () => {
+  const tmp = tempy.directory()
+  fs.writeFileSync(
+    path.resolve(tmp, 'en.json'),
+    JSON.stringify(
+      {
+        'a.custom.hello': 'hello',
+        'a.custom.world': 'world',
+        'b.custom.message': 'Default Message'
+      },
+      null,
+      2
+    ),
+    'utf8'
+  )
+  await m(['en', 'ja'], 'src/test/fixtures/custom/**/*.js', tmp, {
+    defaultLocale: 'en',
+    moduleSourceName: '../i18n',
+    overwriteDefault: true,
+    defaultAsFallback: true
+  })
+  const en = JSON.parse(fs.readFileSync(path.resolve(tmp, 'en.json'), 'utf8'))
+  const ja = JSON.parse(fs.readFileSync(path.resolve(tmp, 'ja.json'), 'utf8'))
+
+  const extractedEn = {
+    'a.custom.hello': 'hello',
+    'a.custom.world': 'world',
+    'b.custom.message': 'Message'
+  }
+  const extractedJa = {
+    'a.custom.hello': 'hello',
+    'a.custom.world': 'world',
+    'b.custom.message': 'Message'
+  }
+
+  expect(en).toEqual(extractedEn)
+  expect(ja).toEqual(extractedJa)
+})

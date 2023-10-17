@@ -13,6 +13,7 @@ const cli = meow(
   -l, --locales           locales [require: true]
   -f, --format            json | yaml [default: json]
   -d, --default-locale    default locale
+  --defaultAsFallback     fills non default locales with defaultMessage [default: false] 
   --overwriteDefault      [default: true]
   --flat                  json [default: true] | yaml [default: false]
 
@@ -45,6 +46,10 @@ const cli = meow(
       overwriteDefault: {
         type: 'boolean',
         default: true
+      },
+      defaultAsFallback: {
+        type: 'boolean',
+        default: false
       },
       withDescriptions: {
         type: 'boolean',

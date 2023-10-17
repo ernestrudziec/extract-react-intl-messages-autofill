@@ -63,6 +63,7 @@ type Opts = {
   format?: string
   flat?: boolean
   overwriteDefault?: boolean
+  defaultAsFallback?: boolean
 }
 
 // eslint-disable-next-line max-lines-per-function
@@ -75,6 +76,7 @@ const extractMessage = async (
     flat = isJson(format),
     defaultLocale = 'en',
     overwriteDefault = true,
+    defaultAsFallback = false,
     ...opts
   }: Opts = {
     defaultLocale: 'en'
@@ -113,6 +115,7 @@ const extractMessage = async (
   return Promise.all(
     locales.map((locale) => {
       // If the default locale, overwrite the origin file
+
       let localeMap =
         locale === defaultLocale && overwriteDefault
           ? // Create a clone so we can use only current valid messages below
@@ -121,13 +124,30 @@ const extractMessage = async (
       // Only keep existing keys
       localeMap = pick(localeMap, Object.keys(newLocaleMaps[locale]))
 
-      const fomattedLocaleMap: object = flat
+      // if not default locale and defaultAsFallback is true use default locale string instead of empty string
+
+      if (locale !== defaultLocale && defaultAsFallback) {
+        localeMap = Object.keys(localeMap).reduce((acc, key) => {
+          const defaultLocaleValue = oldLocaleMaps[defaultLocale][key]
+          const defaultMessageValue = newLocaleMaps[defaultLocale][key]
+
+          if (localeMap[key] === '') {
+            return {
+              ...acc,
+              [key]: overwriteDefault ? defaultMessageValue : defaultLocaleValue
+            }
+          }
+          return acc
+        }, {})
+      }
+
+      const formattedLocaleMap: object = flat
         ? sortKeys(localeMap, { deep: true })
         : sortKeys(unflatten(localeMap, { object: true }), { deep: true })
 
       const fn = isJson(format) ? writeJson : writeYaml
 
-      return fn(path.resolve(buildDir, locale), fomattedLocaleMap)
+      return fn(path.resolve(buildDir, locale), formattedLocaleMap)
     })
   )
 }

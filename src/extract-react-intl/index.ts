@@ -68,6 +68,7 @@ type Options = {
   defaultLocale?: string
   cwd?: string
   withDescriptions?: boolean
+  defaultAsFallback?: boolean
 }
 
 type Message = {
@@ -83,6 +84,7 @@ export default async (
   {
     defaultLocale = 'en',
     withDescriptions = false,
+    defaultAsFallback = false,
     cwd = process.cwd(),
     ...pluginOptions
   }: Options = {}
@@ -129,7 +131,9 @@ export default async (
     }
     const { metadata } = await pify(transformFile)(file, babelOpts)
     const localeObj = localeMap(locales)
+
     const result = metadata['react-intl'].messages as Message[]
+
     for (const { id, defaultMessage, description } of result) {
       // eslint-disable-next-line no-unused-vars
       for (const locale of locales) {

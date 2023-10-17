@@ -191,6 +191,13 @@ Default: true
 
 If overwriteDefault is `false`, it will not overwrite messages in the default locale.
 
+##### defaultAsFallback
+
+Type: `boolean`<br>
+Default: false
+
+If defaultAsFallbackis `true`, it will auto fill not default locales with defaultMessage
+
 ##### flat
 
 Type: `boolean`<br>
@@ -239,6 +246,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
 
 <!-- markdownlint-enable -->
 <!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
